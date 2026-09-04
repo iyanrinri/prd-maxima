@@ -4,6 +4,11 @@ Proyek ini adalah Prototipe Sistem ERP Terintegrasi untuk **Maxima**, sebuah lem
 
 Prototipe ini dibuat berdasarkan dokumentasi **PRD (Product Requirements Document)** komprehensif yang membagi sistem menjadi 5 modul utama.
 
+## 🌟 Live Demo (Coba Langsung!)
+Kamu bisa langsung mencoba prototipe interaktif ini secara *live* melalui tautan Vercel berikut:
+**👉 [https://frontend-omega-lake-20.vercel.app/](https://frontend-omega-lake-20.vercel.app/)**
+
+
 ## 🚀 Struktur Direktori
 
 - `/prd/` : Kumpulan Dokumen PRD (Tier 1 s/d Tier 3) untuk seluruh modul (Sistem Pendaftaran, Finance, Akademik, Admission, Portal Siswa).
