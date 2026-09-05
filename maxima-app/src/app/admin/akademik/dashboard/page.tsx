@@ -6,12 +6,13 @@ import Link from 'next/link';
 export default async function AkademikDashboardPage({
   searchParams
 }: {
-  searchParams?: { cabang?: string }
+  searchParams: Promise<{ cabang?: string }>
 }) {
   const session = await getSession();
   if (!session || (session.role !== 'admin' && session.role !== 'kepala_akademik')) redirect('/');
 
-  const cabangFilter = searchParams?.cabang || 'Semua Cabang';
+  const resolvedSearchParams = await searchParams;
+  const cabangFilter = resolvedSearchParams?.cabang || 'Semua Cabang';
   const isFiltered = cabangFilter !== 'Semua Cabang';
 
   const totalSiswa = await prisma.siswa.count({ where: isFiltered ? { cabang: cabangFilter } : undefined });
