@@ -1,0 +1,55 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// 1. Tabel Master (Paket)
+model Paket {
+  id               String   @id @default(cuid())
+  nama             String   // Contoh: Ausbildung 36, Au Pair 7
+  hargaRupiah      Int
+  hargaEuro        Int
+  ambangPaspor     Int?
+  ambangUjian      Int?
+  ambangPemberkasan Int?
+  ambangKontrak    Int?
+  ambangVisa       Int?
+  
+  siswas           Siswa[]
+}
+
+// 2. Tabel Identitas Siswa
+model Siswa {
+  id               String   @id @default(cuid())
+  noKontrak        String   @unique
+  namaLengkap      String
+  program          String   // Ausbildung, Au Pair, FSJ
+  cabang           String
+  status           String   @default("AKTIF") // AKTIF, CUTI, ALUMNI
+  
+  paketId          String
+  paket            Paket    @relation(fields: [paketId], references: [id])
+  
+  pembayarans      Pembayaran[]
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+// 3. Tabel Pembayaran (Finance)
+model Pembayaran {
+  id               String   @id @default(cuid())
+  siswaId          String
+  siswa            Siswa    @relation(fields: [siswaId], references: [id])
+  
+  nominalRupiah    Int
+  nominalEuro      Int      @default(0)
+  keterangan       String   // DP, Cicilan 1, Pelunasan
+  metode           String   // VA, Transfer, Tunai
+  tanggal          DateTime @default(now())
+  status           String   @default("LUNAS") // LUNAS, MENUNGGU PENGESAHAN
+}
