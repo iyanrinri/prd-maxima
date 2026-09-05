@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flowchart POV Siswa - Presentasi</title>
+    <!-- Memuat library Mermaid JS untuk render Flowchart -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: {
+                useMaxWidth: false,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+    </script>
+    <style>
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            margin: 0; 
+            padding: 40px; 
+            background-color: #f3f4f6; 
+            color: #1f2937;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        h1 { 
+            margin: 0 0 10px 0; 
+            font-size: 28px;
+            color: #111827;
+        }
+        p.subtitle {
+            margin: 0;
+            color: #6b7280;
+            font-size: 16px;
+        }
+        .diagram-container { 
+            display: flex; 
+            justify-content: center; 
+            background: white; 
+            padding: 40px; 
+            border-radius: 12px; 
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); 
+            overflow-x: auto;
+        }
+        .legend-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .color-box {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+        /* Custom Colors for Legend */
+        .c-page { background: #e0f2fe; border: 2px solid #0284c7; }
+        .c-action { background: #dcfce7; border: 2px solid #16a34a; }
+        .c-gatekeeper { background: #fee2e2; border: 2px dashed #dc2626; }
+        .c-success { background: #fef08a; border: 2px solid #ca8a04; }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 14px;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Alur Interaksi Siswa (Portal POV Siswa)</h1>
+        <p class="subtitle">Berdasarkan 5 Halaman Inti Siswa (PRD Versi 1.0)</p>
+    </div>
+
+    <div class="diagram-container">
+        <div class="mermaid">
+        graph TD
+            %% --- Konfigurasi Visual ---
+            classDef page fill:#e0f2fe,stroke:#0284c7,stroke-width:2px,color:#0369a1
+            classDef action fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
+            classDef gatekeeper fill:#fee2e2,stroke:#dc2626,stroke-width:3px,color:#991b1b,stroke-dasharray: 5 5
+            classDef success fill:#fef08a,stroke:#ca8a04,stroke-width:2px,color:#854d0e
+            
+            subgraph Portal ["Navigasi Utama Portal Siswa"]
+                direction TB
+                
+                %% Halaman 1
+                H1["1. Beranda<br/>(Pusat Kontrol)"]:::page
+                H1 --> H1_A["Action Card Pintar:<br/>'Apa yang harus saya lakukan?'"]:::action
+                
+                %% Routing otomatis dari Beranda
+                H1_A -.->|Arahkan ke Profil| H2
+                H1_A -.->|Arahkan ke Pembayaran| H3
+                H1_A -.->|Arahkan ke Belajar| H4
+                H1_A -.->|Arahkan ke Jerman| H5
+                
+                %% Halaman 2
+                H2["2. Profil & Dokumen<br/>(Satu Tempat Upload)"]:::page
+                H2 --> D1["Lengkapi Data Diri"]
+                H2 --> D2["Unggah Dokumen Pribadi"]
+                H2 --> D3["Unggah Dokumen Bewerbung"]
+                
+                %% Halaman 3
+                H3["3. Pembayaran<br/>(Transparansi Rupiah & Euro)"]:::page
+                H3 --> P1["Lihat Sisa Tagihan & Histori"]
+                H3 --> P2["Bayar Cicilan IDR (VA/QRIS)"]:::action
+                
+                %% Halaman 4
+                H4["4. Pembelajaran<br/>(Progres Akademik)"]:::page
+                H4 --> A1["Cek Persentase Kehadiran & Nilai"]
+                H4 --> A2["Unduh Raport PDF"]
+                H4 --> A3["Tombol: Ajukan Cuti"]
+                A3 -.->|Cek Minimal Pembayaran| G1{Gatekeeper<br/>Finance}:::gatekeeper
+                
+                %% Halaman 5
+                H5["5. Proses ke Jerman<br/>(Layanan & Penempatan)"]:::page
+                H5 --> J1["Cek Papan 9 Layanan"]
+                J1 -.->|Cek Ambang Paket| G2{Gatekeeper<br/>Finance}:::gatekeeper
+                
+                G2 -->|Layanan Terkunci| J2["Banner Peringatan:<br/>'Bayar Rp X lagi untuk membuka'"]:::gatekeeper
+                J2 -.->|Arahkan ke| P2
+                
+                G2 -->|Layanan Terbuka| J3["Tracking Pencarian Partner<br/>(Wawancara dll)"]
+                J3 --> J4["Proses Visa Kedutaan"]
+                J4 --> J5(("VISA GRANTED!")):::success
+                J5 --> J6["Tampil Form Alumni<br/>(Isi Jadwal Terbang)"]:::action
+            end
+        </div>
+    </div>
+
+    <div class="legend-container">
+        <div class="legend-item"><div class="color-box c-page"></div> Halaman Utama (Menu Kiri)</div>
+        <div class="legend-item"><div class="color-box c-action"></div> Titik Aksi Siswa (Tombol/Input)</div>
+        <div class="legend-item"><div class="color-box c-gatekeeper"></div> Pengecekan Sistem & Penolakan Halus</div>
+        <div class="legend-item"><div class="color-box c-success"></div> Pencapaian Akhir (Goal)</div>
+    </div>
+    
+    <div class="footer">
+        Dibuat untuk Presentasi PRD Maxima Stiftung. Gunakan fitur Zoom in/out pada browser untuk memperbesar bagan.
+    </div>
+</body>
+</html>

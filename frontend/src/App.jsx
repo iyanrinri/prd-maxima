@@ -27,9 +27,13 @@ import FinanceInvoice from './pages/FinanceInvoice';
 import FinancePemasukan from './pages/FinancePemasukan';
 import FinancePiutang from './pages/FinancePiutang';
 import { LogOut, UserCircle } from 'lucide-react';
+import { getFullSiswaData } from './data/mockDatabase';
 
 const Layout = ({ children, role, setRole }) => {
   const navigate = useNavigate();
+  
+  // Simulasi Siswa Login
+  const siswa = getFullSiswaData().find(s => s.id === 1);
 
   const handleLogout = () => {
     setRole(null);
@@ -45,7 +49,7 @@ const Layout = ({ children, role, setRole }) => {
           <div className="user-info">
             <UserCircle size={24} color="#6B7280" />
             <span style={{ fontWeight: 500 }}>
-              {role === 'siswa' ? 'Sarah Jenkins' : role.toUpperCase()}
+              {role === 'siswa' ? (siswa ? siswa.namaLengkap : 'Siswa') : role.toUpperCase()}
             </span>
             <button className="logout-btn" onClick={handleLogout}>
               <LogOut size={16} /> Logout

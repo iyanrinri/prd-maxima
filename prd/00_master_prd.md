@@ -4,12 +4,13 @@
 Dokumen ini adalah *Master Document* (Tier 1) yang mendefinisikan kebutuhan sistem tingkat tinggi untuk mendigitalisasi alur pendaftaran, manajemen pembelajaran, hingga proses penyaluran siswa ke partner. Tujuannya adalah menyederhanakan alur kerja yang manual, menghindari data tercecer, dan memastikan proses berjalan sesuai aturan (validasi antar departemen).
 
 ## 2. Struktur Dokumen (Modul Sistem)
-Untuk memudahkan *development*, PRD ini dibagi menjadi 4 modul utama. *(Catatan: File untuk Tier 2 akan dibuat dan dihubungkan ke sini nanti)*:
+Untuk memudahkan *development*, PRD ini dibagi menjadi 4 modul utama dan dokumen pendukung. *(Catatan: File untuk Tier 2 akan dibuat dan dihubungkan ke sini nanti)*:
 1. **Modul 1: Pendaftaran & CRM** -> Fokus pada alur Marketing dan Calon Siswa (Registrasi).
 2. **Modul 2: Penagihan & Keuangan** -> Fokus pada alur Finance (Invoice & Validasi Pembayaran).
 3. **Modul 3: Manajemen Akademik** -> Fokus pada alur Pengajaran (Jadwal, Absensi, Nilai).
 4. **Modul 4: Kelulusan & Penyaluran Partner** -> Fokus pada alur Admission (Sertifikat & Penyaluran).
 5. **Modul 5: Portal Siswa (Dashboard)** -> Fokus pada *User Interface* POV Siswa (Tagihan, Jadwal, Nilai, Progres Admission).
+6. **Master Data & Skema Database** -> Representasi tabel relasional dan entitas utama, terutama struktur data Siswa. Lihat: [Master Data Schema Siswa](./01_master_data_siswa_schema.md).
 
 ## 3. Pengguna Sistem (User Roles)
 Sistem memiliki 5 peran utama:

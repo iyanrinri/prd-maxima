@@ -1,6 +1,9 @@
 import React from 'react';
+import { getFullSiswaData } from '../data/mockDatabase';
 
 const DashboardAkademik = () => {
+  const siswaData = getFullSiswaData().filter(s => s.akademik);
+
   return (
     <div>
       <h1 className="page-title">Dashboard Kepala Akademik</h1>
@@ -18,25 +21,37 @@ const DashboardAkademik = () => {
         </div>
       </div>
       
-      <div className="glass-card">
-        <h3 style={{marginTop: 0}}>Funnel Progres Level Bahasa (FR-3.1.4)</h3>
-        <div style={{marginTop: '1rem'}}>
-          <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem'}}>
-            <span>A1 (Dasar)</span><span style={{fontWeight: 600}}>210 Siswa</span>
-          </div>
-          <div className="progress-bar"><div className="progress-fill" style={{width: '100%'}}></div></div>
-        </div>
-        <div style={{marginTop: '1rem'}}>
-          <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem'}}>
-            <span>A2 (Menengah)</span><span style={{fontWeight: 600}}>145 Siswa</span>
-          </div>
-          <div className="progress-bar"><div className="progress-fill" style={{width: '69%', backgroundColor: '#F59E0B'}}></div></div>
-        </div>
-        <div style={{marginTop: '1rem'}}>
-          <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem'}}>
-            <span>B1 (Lanjut)</span><span style={{fontWeight: 600}}>95 Siswa</span>
-          </div>
-          <div className="progress-bar"><div className="progress-fill" style={{width: '45%', backgroundColor: '#10B981'}}></div></div>
+      <div className="table-container" style={{ marginTop: '2rem' }}>
+        <h3 className="table-title">Tabel Progres Akademik Siswa</h3>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ whiteSpace: 'nowrap' }}>
+            <thead>
+              <tr>
+                <th>No Kontrak</th>
+                <th>Nama Siswa</th>
+                <th>Kehadiran</th>
+                <th>Level A1</th>
+                <th>Level A2</th>
+                <th>Level B1</th>
+                <th>Level B2</th>
+                <th>Rekomendasi B1</th>
+              </tr>
+            </thead>
+            <tbody>
+              {siswaData.map(siswa => (
+                <tr key={siswa.id}>
+                  <td style={{fontWeight: 600}}>{siswa.noKontrak}</td>
+                  <td>{siswa.namaLengkap}</td>
+                  <td>{siswa.akademik.kehadiran}</td>
+                  <td><span className={`badge ${siswa.akademik.tingkatA1 === 'Lulus' ? 'badge-success' : 'badge-warning'}`}>{siswa.akademik.tingkatA1}</span></td>
+                  <td><span className={`badge ${siswa.akademik.tingkatA2 === 'Lulus' ? 'badge-success' : 'badge-warning'}`}>{siswa.akademik.tingkatA2}</span></td>
+                  <td><span className={`badge ${siswa.akademik.tingkatB1 === 'Lulus' ? 'badge-success' : 'badge-warning'}`}>{siswa.akademik.tingkatB1}</span></td>
+                  <td><span className={`badge ${siswa.akademik.tingkatB2 === 'Lulus' ? 'badge-success' : 'badge-danger'}`}>{siswa.akademik.tingkatB2}</span></td>
+                  <td>{siswa.akademik.rekomendasiB1}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
