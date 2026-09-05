@@ -18,29 +18,142 @@ model Paket {
   ambangPemberkasan Int?
   ambangKontrak    Int?
   ambangVisa       Int?
+  targetLevel      String   @default("B1") // e.g. B1, B2, A2
+  deskripsi        String?
   
   siswas           Siswa[]
 }
 
 // 2. Tabel Identitas Siswa
 model Siswa {
-  id               String   @id @default(cuid())
-  noKontrak        String   @unique
-  namaLengkap      String
-  program          String   // Ausbildung, Au Pair, FSJ
-  cabang           String
-  status           String   @default("AKTIF") // AKTIF, CUTI, ALUMNI
-  
-  paketId          String
-  paket            Paket    @relation(fields: [paketId], references: [id])
-  
-  pembayarans      Pembayaran[]
-  
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id          String       @id @default(uuid())
+  noKontrak   String       @unique
+  namaLengkap String
+  program     String       @default("Ausbildung")
+  cabang      String       @default("Pusat")
+  status      String       @default("AKTIF")
+  paket       Paket        @relation(fields: [paketId], references: [id])
+  paketId     String
+  pembayarans Pembayaran[]
+  kelas       Kelas?       @relation(fields: [kelasId], references: [id])
+  kelasId     String?
+  kehadirans  Kehadiran[]
+  nilais      Nilai[]
+  tugas       Tugas[]
+  raports     Raport[]
+  ujians      UjianSertifikasi[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
-// 3. Tabel Pembayaran (Finance)
+model Pengajar {
+  id        String   @id @default(uuid())
+  nama      String
+  email     String   @unique
+  kelas     Kelas[]
+  raports   Raport[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Kelas {
+  id         String   @id @default(uuid())
+  nama       String   // misal: "Berlin", "München"
+  level      String   // misal: "A1", "A2", "B1"
+  bab        Int      @default(1) // Progres bab materi
+  status     String   @default("Berjalan") // Berjalan, Selesai
+  pengajar   Pengajar @relation(fields: [pengajarId], references: [id])
+  pengajarId String
+  siswa      Siswa[]
+  jadwal     JadwalAkademik[]
+  tugas      Tugas[]
+  evaluasis  EvaluasiKelas[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Kehadiran {
+  id        String   @id @default(uuid())
+  tanggal   DateTime @default(now())
+  status    String   // "Hadir", "Izin", "Sakit", "Alpha", "Terlambat"
+  siswa     Siswa    @relation(fields: [siswaId], references: [id])
+  siswaId   String
+  createdAt DateTime @default(now())
+}
+
+model Nilai {
+  id        String   @id @default(uuid())
+  jenis     String   // "A1", "A2", "B1", "B2"
+  bab       Int?     // Untuk assessment per bab (opsional)
+  lesen     Int      @default(0)
+  horen     Int      @default(0)
+  schreiben Int      @default(0)
+  sprechen  Int      @default(0)
+  grammatik Int      @default(0)
+  wortschatz Int     @default(0)
+  siswa     Siswa    @relation(fields: [siswaId], references: [id])
+  siswaId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model JadwalAkademik {
+  id         String   @id @default(uuid())
+  tanggal    DateTime
+  jamMulai   String   @default("08:00")
+  jamSelesai String   @default("10:00")
+  jenis      String   // "Kelas", "Ujian", "Remedial", "Libur", "Placement Test"
+  keterangan String
+  status     String   @default("Akan Dimulai") // "Akan Dimulai", "Berjalan", "Selesai"
+  kelas      Kelas?   @relation(fields: [kelasId], references: [id])
+  kelasId    String?
+  createdAt  DateTime @default(now())
+}
+
+model Tugas {
+  id        String   @id @default(uuid())
+  judul     String
+  selesai   Boolean  @default(false)
+  siswa     Siswa    @relation(fields: [siswaId], references: [id])
+  siswaId   String
+  kelas     Kelas    @relation(fields: [kelasId], references: [id])
+  kelasId   String
+  createdAt DateTime @default(now())
+}
+
+model Raport {
+  id         String   @id @default(uuid())
+  catatan    String
+  siswa      Siswa    @relation(fields: [siswaId], references: [id])
+  siswaId    String
+  pengajar   Pengajar @relation(fields: [pengajarId], references: [id])
+  pengajarId String
+  createdAt  DateTime @default(now())
+}
+
+model UjianSertifikasi {
+  id        String   @id @default(uuid())
+  namaUjian String   // e.g. "Goethe Zertifikat B1"
+  lulus     Boolean  @default(false)
+  nilai     Int      @default(0)
+  dokumen   String?  // URL file sertifikat
+  siswa     Siswa    @relation(fields: [siswaId], references: [id])
+  siswaId   String
+  createdAt DateTime @default(now())
+}
+
+// 3. Tabel Evaluasi Kelas
+model EvaluasiKelas {
+  id            String   @id @default(uuid())
+  kelasId       String
+  kelas         Kelas    @relation(fields: [kelasId], references: [id])
+  kendalaKelas  String
+  evaluasiPengajar String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// 4. Tabel Pembayaran (Finance)
 model Pembayaran {
   id               String   @id @default(cuid())
   siswaId          String

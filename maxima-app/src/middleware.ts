@@ -24,13 +24,20 @@ export async function middleware(request: NextRequest) {
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET);
     
-    // RBAC Sederhana
-    if (isAdminRoute && payload.role !== 'admin') {
-      return NextResponse.redirect(new URL('/siswa/dashboard', request.url));
+    // Proteksi role
+    const path = request.nextUrl.pathname;
+    const role = payload.role;
+
+    if (path.startsWith('/admin') && role !== 'admin' && role !== 'kepala_akademik') {
+      return NextResponse.redirect(new URL('/', request.url));
     }
-    
-    if (isSiswaRoute && payload.role !== 'siswa') {
-      return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+
+    if (path.startsWith('/siswa') && role !== 'siswa') {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+
+    if (path.startsWith('/pengajar') && role !== 'pengajar') {
+      return NextResponse.redirect(new URL('/', request.url));
     }
 
     return NextResponse.next();

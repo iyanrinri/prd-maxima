@@ -32,10 +32,12 @@ Sistem ini didesain menggantikan sistem *spreadsheet* lama, menyatukan 9 pintu m
 
 Untuk mencoba aplikasi, Anda dapat *login* menggunakan kredensial di bawah ini:
 
-### 1. Akun Admin (Tim Internal)
+### 1. Akun Internal (Tim Maxima)
 | Peran | Email | Password |
 |---|---|---|
 | **Super Admin** | `admin@maxima.com` | `password123` |
+| **Kepala Akademik** | `akademik@maxima.com` | `password123` |
+| **Pengajar (Guru)** | `pengajar@maxima.com` | `password123` |
 | **Konsultan (Marketing)** | `konsultan@maxima.com` | `password123` |
 | **Manajer Finance** | `finance@maxima.com` | `password123` |
 | **Admission** | `admission@maxima.com` | `password123` |

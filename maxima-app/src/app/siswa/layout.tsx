@@ -15,17 +15,17 @@ export default function SiswaLayout({
         </div>
         
         <nav className="flex-1 space-y-1">
-          <Link href="/siswa/dashboard" className="block px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors">
-            Beranda Siswa
+          <Link href="/siswa/dashboard" className="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+            Dashboard
           </Link>
-          <Link href="#" className="block px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors">
-            Profil & Dokumen
+          <Link href="/siswa/kelas" className="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+            Kelas Saya
           </Link>
-          <Link href="/siswa/pembayaran" className="block px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors">
-            Pembayaran
+          <Link href="/siswa/ujian" className="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+            Input Ujian & Sertifikasi
           </Link>
-          <Link href="#" className="block px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors">
-            Pembelajaran
+          <Link href="/siswa/dokumen" className="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+            Dokumen Persiapan
           </Link>
           <Link href="#" className="block px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors">
             Progres Penempatan
