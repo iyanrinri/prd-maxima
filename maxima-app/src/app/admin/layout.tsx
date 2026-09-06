@@ -28,6 +28,12 @@ export default async function AdminLayout({
               <Link href="/admin/dashboard" className="block px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors">
                 Dashboard Pusat
               </Link>
+              <Link href="/admin/marketing" className="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+                Kepala Marketing
+              </Link>
+              <Link href="/admin/konsultan" className="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+                Dashboard Konsultan
+              </Link>
               <Link href="/admin/keuangan" className="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
                 Manajemen Keuangan
               </Link>

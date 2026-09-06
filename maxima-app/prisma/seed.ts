@@ -5,8 +5,11 @@ async function main() {
   console.log('Memulai seeder...')
 
   // 1. Buat Paket
-  const paketAusbildung = await prisma.paket.create({
-    data: {
+  const paketAusbildung = await prisma.paket.upsert({
+    where: { id: 'paket-ausbildung' },
+    update: {},
+    create: {
+      id: 'paket-ausbildung',
       nama: 'Ausbildung - 36',
       deskripsi: 'Program persiapan bahasa intensif khusus untuk calon peserta Ausbildung di Jerman dengan target sertifikasi B2.',
       hargaRupiah: 36000000,
@@ -17,11 +20,13 @@ async function main() {
       ambangKontrak: 33000000,
       ambangVisa: 36000000,
     }
-  })
+  });
 
   // 2. Promo Code
-  const promoAkhirTahun = await prisma.promoCode.create({
-    data: {
+  const promoAkhirTahun = await prisma.promoCode.upsert({
+    where: { kode: 'AKHIRTAHUN26' },
+    update: {},
+    create: {
       kode: 'AKHIRTAHUN26',
       jenis: 'NOMINAL',
       nilaiRupiah: 2000000,
@@ -31,22 +36,29 @@ async function main() {
   });
 
   // 3. Buat Pengajar & Kelas
-  const pengajar = await prisma.pengajar.create({
-    data: {
+  const pengajar = await prisma.pengajar.upsert({
+    where: { email: 'schmidt@maxima.com' },
+    update: {},
+    create: {
       nama: 'Herr Schmidt',
       email: 'schmidt@maxima.com',
     }
   });
 
-  const pengajar2 = await prisma.pengajar.create({
-    data: {
+  const pengajar2 = await prisma.pengajar.upsert({
+    where: { email: 'muller@maxima.com' },
+    update: {},
+    create: {
       nama: 'Frau Müller',
       email: 'muller@maxima.com',
     }
   });
 
-  const kelasBerlin = await prisma.kelas.create({
-    data: {
+  const kelasBerlin = await prisma.kelas.upsert({
+    where: { id: 'kelas-berlin' },
+    update: {},
+    create: {
+      id: 'kelas-berlin',
       nama: 'Berlin',
       level: 'A1',
       bab: 4,
@@ -54,8 +66,11 @@ async function main() {
     }
   });
 
-  const kelasMunchen = await prisma.kelas.create({
-    data: {
+  const kelasMunchen = await prisma.kelas.upsert({
+    where: { id: 'kelas-munchen' },
+    update: {},
+    create: {
+      id: 'kelas-munchen',
       nama: 'München',
       level: 'B1',
       bab: 1,
@@ -125,6 +140,22 @@ async function main() {
     "Zaskia Sungkar"
   ];
 
+  // 3b. Buat Konsultan
+  const konsultan1 = await prisma.konsultan.create({
+    data: { nama: 'Riska Mustikawati (Konsultan A)' }
+  });
+  const konsultan2 = await prisma.konsultan.create({
+    data: { nama: 'Andi Saputra (Konsultan B)' }
+  });
+  const konsultan3 = await prisma.konsultan.create({
+    data: { nama: 'Siti Aminah (Konsultan C)' }
+  });
+  
+  const konsultanOptions = [konsultan1.id, konsultan2.id, konsultan3.id];
+  const sumberLeadOptions = ['Sosmed', 'Rekomendasi Alumni', 'Referal', 'Expo', 'Iklan Google'];
+  const pendidikanOptions = ['SMA', 'SMK', 'D3', 'S1', 'S2'];
+  const domisiliOptions = ['Jakarta', 'Bandung', 'Surabaya', 'Medan', 'Makassar', 'Semarang', 'Yogyakarta'];
+
   for (let i = 1; i <= 53; i++) {
     const isBandung = i % 3 === 0;
     const currentCabang = cabangOptions[i % 5];
@@ -133,6 +164,12 @@ async function main() {
     const isRisky = i % 7 === 0;
     const isLulus = i % 5 === 0;
     const baseScore = isRisky ? 40 : (isLulus ? 85 : 70); 
+
+    const currentKonsultanId = konsultanOptions[i % 3];
+    const currentSumberLead = sumberLeadOptions[i % 5];
+    const currentUsia = 18 + (i % 8); // Umur 18 - 25
+    const currentPendidikan = pendidikanOptions[i % 5];
+    const currentDomisili = domisiliOptions[i % 7];
 
     const newSiswa = await prisma.siswa.upsert({
       where: { noKontrak: `MX-2026-${i.toString().padStart(3, '0')}` },
@@ -145,6 +182,13 @@ async function main() {
         tahapanAdmission: isLulus ? 'Alumni' : 'Sedang Belajar Bahasa',
         paketId: paketAusbildung.id,
         kelasId: currentKelasId,
+        
+        // Marketing & Demografi
+        konsultanId: currentKonsultanId,
+        sumberLead: currentSumberLead,
+        usia: currentUsia,
+        pendidikanTerakhir: currentPendidikan,
+        domisili: currentDomisili,
       }
     });
 
@@ -245,8 +289,10 @@ async function main() {
     });
 
     // Dokumen Siswa
-    await prisma.dokumenSiswa.create({
-      data: {
+    await prisma.dokumenSiswa.upsert({
+      where: { siswaId: newSiswa.id },
+      update: {},
+      create: {
         siswaId: newSiswa.id,
         pasFoto: 'https://example.com/pasfoto.jpg',
         aktaKelahiran: isLulus ? 'https://example.com/akta.pdf' : null,

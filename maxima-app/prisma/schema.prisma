@@ -55,6 +55,15 @@ model Siswa {
   raports     Raport[]
   ujians      UjianSertifikasi[]
 
+  // Marketing & Demografi
+  sumberLead             String?    
+  usia                   Int?
+  pendidikanTerakhir     String?    
+  domisili               String?    
+  
+  konsultan              Konsultan? @relation(fields: [konsultanId], references: [id])
+  konsultanId            String?
+
   // Admission Module Relations
   tahapanAdmission       String?                  @default("Belum Diproses")
   dokumenSiswa           DokumenSiswa?
@@ -398,4 +407,11 @@ model SertifikatBahasaDetail {
   uploadSertifikat    String?
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
+}
+
+model Konsultan {
+  id        String   @id @default(uuid())
+  nama      String
+  siswa     Siswa[]
+  createdAt DateTime @default(now())
 }

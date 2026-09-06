@@ -19,7 +19,16 @@ export default async function SiswaProgresLayananPage() {
   }
 
   // Define default layanans if not present in DB
-  const defaultLayanans = ['Paspor', 'Terjemah Dokumen', 'Apostille', 'Legalisir'];
+  const defaultLayanans = [
+    'Paspor', 
+    'Terjemah dokumen', 
+    'Apostille Dokumen', 
+    'Ujian Bahasa',
+    'Workshop',
+    'Pencarian Perusahaan',
+    'Pengajuan Visa',
+    'Keberangkatan (Dana Talang Tiket Pesawat Opsional)'
+  ];
   const existingLayanans = siswa.layananSiswas.map(l => l.jenisLayanan);
   
   // Combine DB and defaults for display
