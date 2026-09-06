@@ -179,9 +179,13 @@ export async function deleteLatihanWawancara(id: string, siswaId: string) {
   revalidatePath(`/admin/admission/database-siswa/${siswaId}`);
 }
 
-export async function addTimelineAdmission(siswaId: string, kegiatan: string) {
+export async function addTimelineSiswa(siswaId: string, aktivitas: string, deskripsi?: string) {
   await prisma.timelineAdmission.create({
-    data: { siswaId, kegiatan }
+    data: { 
+      siswaId, 
+      aktivitas,
+      deskripsi 
+    }
   });
   revalidatePath(`/admin/admission/database-siswa/${siswaId}`);
 }

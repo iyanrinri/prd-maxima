@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { addTimelineAdmission } from '../../actions';
+import { addTimelineSiswa } from '../../actions';
 import { Plus, Loader2, Clock, CheckCircle2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -21,7 +21,7 @@ export default function TimelineView({
     e.preventDefault();
     setLoading(true);
     try {
-      await addTimelineAdmission(siswaId, kegiatan);
+      await addTimelineSiswa(siswaId, kegiatan, '');
       setAdding(false);
       setKegiatan('');
       router.refresh();

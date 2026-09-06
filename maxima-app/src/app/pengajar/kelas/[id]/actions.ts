@@ -20,7 +20,6 @@ export async function updateAbsensi(siswaId: string, kelasId: string, status: st
   await prisma.kehadiran.create({
     data: {
       siswaId,
-      kelasId,
       status
     }
   });
@@ -40,7 +39,7 @@ export async function updateNilai(data: FormData) {
   await prisma.nilai.create({
     data: {
       siswaId,
-      level: kelasLevel,
+      jenis: kelasLevel,
       bab,
       lesen,
       horen,

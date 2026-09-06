@@ -41,11 +41,11 @@ export async function GET(request: Request) {
       const message = `Halo ${t.siswa.namaLengkap}, ini adalah pengingat untuk tagihan ${t.termin} Anda sebesar Rp ${t.nominalRupiah}. Jatuh tempo dalam ${diffTime} hari pada ${new Date(t.jatuhTempo).toLocaleDateString('id-ID')}.`;
       
       // TODO: Integrasi dengan Email SMTP / WhatsApp API sebenarnya di sini.
-      console.log(`[CRON REMINDER - ${t.siswa.email}]:`, message);
+      console.log(`[CRON REMINDER - ${t.siswa.noKontrak}]:`, message);
 
       notificationsSent.push({
         siswa: t.siswa.namaLengkap,
-        email: t.siswa.email,
+        noKontrak: t.siswa.noKontrak,
         sisaHari: diffTime,
         status: 'LOGGED'
       });
