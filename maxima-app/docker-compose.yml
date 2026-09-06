@@ -7,7 +7,7 @@ services:
     ports:
       - "${APP_PORT:-3000}:3000"
     environment:
-      - DATABASE_URL=file:/app/prisma/dev.db
+      - DATABASE_URL=file:///app/prisma/dev.db
     volumes:
       # Mount the database file so it persists across container restarts
       - ./prisma/dev.db:/app/prisma/dev.db
