@@ -6,7 +6,7 @@ const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || 'rahasia-banget-mvp-maxima'
 );
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // Hanya lindungi rute di bawah /admin dan /siswa
   const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
   const isSiswaRoute = request.nextUrl.pathname.startsWith('/siswa');
