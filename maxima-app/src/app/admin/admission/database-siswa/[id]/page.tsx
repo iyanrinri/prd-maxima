@@ -48,8 +48,7 @@ export default async function DetailSiswaAdmission({
 
   if (!siswa) notFound();
 
-  const activeTab = resolvedSearch.tab || 'profil';
-
+  // Duplicate definition removed
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-12">
       <div className="flex items-center space-x-3 mb-6">
