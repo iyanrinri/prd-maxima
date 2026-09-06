@@ -16,6 +16,9 @@ export async function POST(request: Request) {
     if (email === 'admin@maxima.com' && password === 'password123') {
       role = 'admin';
       name = 'Super Admin';
+    } else if (email === 'admission@maxima.com' && password === 'password123') {
+      role = 'admin_admission';
+      name = 'Admin Admission';
     } else if (email === 'akademik@maxima.com' && password === 'password123') {
       role = 'kepala_akademik';
       name = 'Kepala Akademik';

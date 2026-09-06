@@ -57,6 +57,24 @@ export default async function AdminLayout({
               </Link>
             </div>
           )}
+
+          {(isAdmin || session.role === 'admin_admission') && (
+            <div className="pt-4 mt-4 border-t border-slate-700">
+              <p className="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Admission</p>
+              <Link href="/admin/admission/dashboard" className="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+                Dashboard Admission
+              </Link>
+              <Link href="/admin/admission/database-siswa" className="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+                Database Siswa
+              </Link>
+              <Link href="/admin/admission/progres-partner" className="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+                Progres Partner
+              </Link>
+              <Link href="/admin/admission/alumni" className="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+                Data Alumni
+              </Link>
+            </div>
+          )}
         </nav>
 
         <div className="pt-4 border-t border-slate-700">

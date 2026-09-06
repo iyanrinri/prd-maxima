@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  maxima-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      # Mount the database file so it persists across container restarts
+      - ./prisma/dev.db:/app/prisma/dev.db
+    restart: unless-stopped

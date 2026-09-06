@@ -20,6 +20,16 @@ model Paket {
   ambangVisa       Int?
   targetLevel      String   @default("B1") // e.g. B1, B2, A2
   deskripsi        String?
+
+  // Minimal Pembayaran per Termin
+  terminA2         Int      @default(0)
+  terminB1         Int      @default(0)
+  terminB2         Int      @default(0)
+  terminPaspor     Int      @default(0)
+  terminUjian      Int      @default(0)
+  terminWorkshop   Int      @default(0)
+  terminPerusahaan Int      @default(0)
+  terminVisa       Int      @default(0)
   
   siswas           Siswa[]
 }
@@ -35,6 +45,7 @@ model Siswa {
   paket       Paket        @relation(fields: [paketId], references: [id])
   paketId     String
   pembayarans Pembayaran[]
+  tagihans    Tagihan[]
   kelas       Kelas?       @relation(fields: [kelasId], references: [id])
   kelasId     String?
   kehadirans  Kehadiran[]
@@ -42,8 +53,33 @@ model Siswa {
   tugas       Tugas[]
   raports     Raport[]
   ujians      UjianSertifikasi[]
+
+  // Admission Module Relations
+  tahapanAdmission       String?                  @default("Belum Diproses")
+  dokumenSiswa           DokumenSiswa?
+  rekomendasiUjians      RekomendasiUjian[]
+  jadwalUjianBahasas     JadwalUjianBahasa[]
+  layananSiswas          LayananSiswa[]
+  progresPartners        ProgresPartner[]
+  latihanWawancaras      LatihanWawancara[]
+  timelineAdmissions     TimelineAdmission[]
+  dataAlumni             DataAlumni?
+  sertifikatBahasas      SertifikatBahasaDetail[]
+  progresBahasas         ProgresBahasa[]
+
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+}
+
+model ProgresBahasa {
+  id            String   @id @default(uuid())
+  siswaId       String
+  siswa         Siswa    @relation(fields: [siswaId], references: [id])
+  level         String
+  statusLulus   Boolean  @default(false)
+  sedangBelajar Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Pengajar {
@@ -159,10 +195,206 @@ model Pembayaran {
   siswaId          String
   siswa            Siswa    @relation(fields: [siswaId], references: [id])
   
+  tagihanId        String?
+  tagihan          Tagihan? @relation(fields: [tagihanId], references: [id])
+
   nominalRupiah    Int
   nominalEuro      Int      @default(0)
   keterangan       String   // DP, Cicilan 1, Pelunasan
-  metode           String   // VA, Transfer, Tunai
+  metode           String   // VA, Transfer, Tunai, Dana Talang
   tanggal          DateTime @default(now())
   status           String   @default("LUNAS") // LUNAS, MENUNGGU PENGESAHAN
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @default(now()) @updatedAt
+
+  arusKas          ArusKas?
+
+}
+
+model Tagihan {
+  id               String   @id @default(cuid())
+  siswaId          String
+  siswa            Siswa    @relation(fields: [siswaId], references: [id])
+
+  termin           String   // e.g., "DP", "Ke-1", "Ke-2", "A2", "B1"
+  nominalRupiah    Int
+  nominalEuro      Int      @default(0)
+  jatuhTempo       DateTime
+  status           String   @default("BELUM_BAYAR") // BELUM_BAYAR, SEBAGIAN, LUNAS, OVERDUE
+
+  promoId          String?
+  promo            PromoCode? @relation(fields: [promoId], references: [id])
+
+  pembayarans      Pembayaran[]
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model PromoCode {
+  id               String   @id @default(cuid())
+  kode             String   @unique
+  jenis            String   @default("NOMINAL") // NOMINAL, PERSENTASE
+  nilaiRupiah      Int      @default(0)
+  nilaiEuro        Int      @default(0)
+  nilaiPersentase  Float    @default(0)
+  kuota            Int?     // null means unlimited
+  berlakuHingga    DateTime?
+
+  tagihans         Tagihan[]
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model ArusKas {
+  id          String   @id @default(cuid())
+  tipe        String   // "CASH_IN", "CASH_OUT"
+  kategori    String   // "PEMBAYARAN_SISWA", "DANA_LAINNYA", "REFUND", "OPERASIONAL", "PARTNER", "LAINNYA"
+  nominal     Int
+  keterangan  String
+  tanggal     DateTime @default(now())
+  
+  pembayaranId String? @unique
+  pembayaran   Pembayaran? @relation(fields: [pembayaranId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// 5. Tabel Admission
+model DokumenSiswa {
+  id                     String   @id @default(uuid())
+  siswaId                String   @unique
+  siswa                  Siswa    @relation(fields: [siswaId], references: [id])
+  pasFoto                String?
+  aktaKelahiran          String?
+  kartuKeluarga          String?
+  ijazahTerakhir         String?
+  transkripTerakhir      String?
+  paspor                 String?
+  lebenslauf             String?
+  motivationsschreiben   String?
+  videoPerkenalan        String?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+}
+
+model RekomendasiUjian {
+  id          String   @id @default(uuid())
+  siswaId     String
+  siswa       Siswa    @relation(fields: [siswaId], references: [id])
+  namaUjian   String
+  status      String   @default("Belum") // Direkomendasikan, Tidak, Lulus, Belum
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model JadwalUjianBahasa {
+  id                 String   @id @default(uuid())
+  siswaId            String
+  siswa              Siswa    @relation(fields: [siswaId], references: [id])
+  jenisUjian         String
+  level              String
+  tanggalPendaftaran DateTime?
+  tanggalUjian       DateTime?
+  status             String   @default("Terdaftar")
+  hasil              String?
+  modulLulus         String?
+  modulGagal         String?
+  sertifikatUrl      String?
+  masaBerlaku        DateTime?
+  catatan            String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model LayananSiswa {
+  id           String   @id @default(uuid())
+  siswaId      String
+  siswa        Siswa    @relation(fields: [siswaId], references: [id])
+  jenisLayanan String   // Pembuatan Paspor, Terjemah Dokumen, dll
+  status       String   @default("Belum Bisa diproses") // Bisa diproses, Belum Bisa diproses
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model ProgresPartner {
+  id               String   @id @default(uuid())
+  siswaId          String
+  siswa            Siswa    @relation(fields: [siswaId], references: [id])
+  partnerName      String
+  posisi           String
+  status           String   @default("Interview") // Interview, Gagal, Dapat Kontrak
+  tanggalProses    DateTime @default(now())
+  catatanPartner   String?
+  catatanAdmission String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model LatihanWawancara {
+  id          String   @id @default(uuid())
+  siswaId     String
+  siswa       Siswa    @relation(fields: [siswaId], references: [id])
+  posisi      String
+  interviewKe Int      @default(1)
+  tanggal     DateTime
+  status      String   @default("Dijadwalkan")
+  pic         String?
+  catatan     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model TimelineAdmission {
+  id          String   @id @default(uuid())
+  siswaId     String
+  siswa       Siswa    @relation(fields: [siswaId], references: [id])
+  aktivitas   String
+  tanggal     DateTime @default(now())
+  deskripsi   String?
+  createdAt   DateTime @default(now())
+}
+
+model DataAlumni {
+  id                       String   @id @default(uuid())
+  siswaId                  String   @unique
+  siswa                    Siswa    @relation(fields: [siswaId], references: [id])
+  perusahaan               String?
+  posisiJurusan            String?
+  kota                     String?
+  bundesland               String?
+  tanggalMulaiVertrag      DateTime?
+  tanggalBerakhirVertrag   DateTime?
+  tanggalPengajuanVisa     DateTime?
+  tanggalWawancaraVisa     DateTime?
+  tanggalApprovedVisa      DateTime?
+  tanggalKeberangkatan     DateTime?
+  uploadVisa               String?
+  uploadKontrakKerja       String?
+  uploadKrankenversicherung String?
+  uploadRahmenplan         String?
+  uploadDokumenLain        String?
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+}
+
+model SertifikatBahasaDetail {
+  id                  String   @id @default(uuid())
+  siswaId             String
+  siswa               Siswa    @relation(fields: [siswaId], references: [id])
+  jenisSertifikat     String   // Goethe, ÖSD, ECL
+  level               String   // A1, A2, B1, B2
+  nilaiLesen          Int?
+  masaBerlakuLesen    DateTime?
+  nilaiHoren          Int?
+  masaBerlakuHoren    DateTime?
+  nilaiSprechen       Int?
+  masaBerlakuSprechen DateTime?
+  nilaiSchreiben      Int?
+  masaBerlakuSchreiben DateTime?
+  uploadSertifikat    String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 }

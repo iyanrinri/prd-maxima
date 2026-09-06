@@ -212,7 +212,68 @@ async function main() {
     }
   });
 
-  console.log('✅ Seeder berhasil dijalankan! Database siap digunakan.')
+  // --- GENERATE 50 DUMMY SISWA UNTUK MEMENUHI DATA APP ---
+  console.log('Men-generate 50 data siswa tambahan...');
+  
+  const cabangOptions = ['Jakarta', 'Bandung', 'Jakarta', 'Jakarta', 'Bandung']; // 60% Jkt, 40% Bdg
+  const kelasOptions = [kelasBerlin.id, kelasMunchen.id];
+  
+  for (let i = 4; i <= 53; i++) {
+    const isBandung = i % 3 === 0;
+    const currentCabang = cabangOptions[i % 5];
+    const currentKelasId = isBandung ? kelasMunchen.id : kelasBerlin.id;
+    
+    // Generate Random Scores between 50-100 (some lower to trigger risk)
+    const baseScore = i % 7 === 0 ? 40 : 70; 
+    const isRisky = i % 7 === 0;
+
+    const newSiswa = await prisma.siswa.upsert({
+      where: { noKontrak: `MX-2026-${i.toString().padStart(3, '0')}` },
+      update: {},
+      create: {
+        noKontrak: `MX-2026-${i.toString().padStart(3, '0')}`,
+        namaLengkap: `Dummy Siswa ${i}`,
+        program: isRisky ? 'Au Pair' : 'Ausbildung',
+        cabang: currentCabang,
+        paketId: paketAusbildung.id,
+        kelasId: currentKelasId,
+      }
+    });
+
+    // Random Attendances (3 records)
+    for (let j = 0; j < 3; j++) {
+      await prisma.kehadiran.create({
+        data: { 
+          siswaId: newSiswa.id, 
+          status: isRisky && j > 0 ? 'Alpha' : 'Hadir', 
+          tanggal: new Date(Date.now() - (j * 24 * 60 * 60 * 1000)) // Past dates
+        }
+      });
+    }
+
+    // Random Nilai
+    await prisma.nilai.create({
+      data: {
+        siswaId: newSiswa.id,
+        jenis: isBandung ? 'B1' : 'A1',
+        lesen: baseScore + (i % 20),
+        horen: baseScore + (i % 15),
+        schreiben: baseScore + (i % 10),
+        sprechen: baseScore + (i % 25),
+        grammatik: baseScore + (i % 12),
+        wortschatz: baseScore + (i % 18)
+      }
+    });
+
+    // Create Tugas if not risky
+    if (!isRisky) {
+      await prisma.tugas.create({
+        data: { judul: `Latihan Bab ${i%5}`, selesai: true, siswaId: newSiswa.id, kelasId: currentKelasId }
+      });
+    }
+  }
+
+  console.log('✅ Seeder berhasil dijalankan! 53 Siswa terdaftar. Database siap digunakan.')
 }
 
 main()

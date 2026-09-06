@@ -1,7 +1,7 @@
 import { getSession } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
+import { EvaluasiFormClient } from './EvaluasiFormClient';
 
 export default async function EvaluasiKelasPage() {
   const session = await getSession();
@@ -19,9 +19,6 @@ export default async function EvaluasiKelasPage() {
     orderBy: { createdAt: 'desc' }
   });
 
-  // Calculate averages per class if no evaluasi is found, we might want to still show classes.
-  // But since it's an Evaluasi log, we just show the logs.
-  
   const kelasAktif = await prisma.kelas.findMany({
     where: { status: 'Berjalan' },
     include: {
@@ -37,9 +34,7 @@ export default async function EvaluasiKelasPage() {
           <h1 className="text-2xl font-bold text-gray-900">Evaluasi Kelas</h1>
           <p className="text-gray-500 mt-1">Rangkuman kinerja kelas, performa pengajar, dan pencatatan kendala operasional.</p>
         </div>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition">
-          + Buat Form Evaluasi Baru
-        </button>
+        <EvaluasiFormClient kelasAktif={kelasAktif} />
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">

@@ -2,6 +2,7 @@ import { getSession } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { BranchFilter } from './BranchFilter';
 
 export default async function AkademikDashboardPage({
   searchParams
@@ -88,15 +89,7 @@ export default async function AkademikDashboardPage({
         
         <div className="flex items-center space-x-2 bg-white rounded-lg border border-gray-200 px-3 py-2">
           <span className="text-sm font-medium text-gray-500">Filter Cabang:</span>
-          <select 
-            className="text-sm font-bold text-gray-900 bg-transparent border-none focus:ring-0 cursor-pointer"
-            defaultValue={cabangFilter}
-            // in a real app, this would use a Client Component router.push. for now it's just visually there for MVP
-          >
-            <option value="Semua Cabang">Semua Cabang</option>
-            <option value="Pusat">Pusat (Jakarta)</option>
-            <option value="Bandung">Cabang Bandung</option>
-          </select>
+          <BranchFilter initialCabang={cabangFilter} />
         </div>
       </div>
 
