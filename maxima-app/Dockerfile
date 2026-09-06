@@ -48,6 +48,9 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# Overwrite .env in standalone to prevent Next.js from loading local relative path
+RUN echo 'DATABASE_URL="file:/app/prisma/dev.db"' > .env
+
 # We need to copy prisma schema and dev.db if we are using sqlite
 COPY --from=builder /app/prisma ./prisma
 
