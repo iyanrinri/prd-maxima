@@ -8,7 +8,7 @@ async function main() {
   const paketAusbildung = await prisma.paket.create({
     data: {
       nama: 'Ausbildung - 36',
-      deskripsi: 'Program persiapan bahasa intensif khusus untuk calon peserta Ausbildung di Jerman dengan target sertifikasi B2. Termasuk bimbingan visa dan dokumen paspor.',
+      deskripsi: 'Program persiapan bahasa intensif khusus untuk calon peserta Ausbildung di Jerman dengan target sertifikasi B2.',
       hargaRupiah: 36000000,
       hargaEuro: 800,
       ambangPaspor: 21000000,
@@ -19,11 +19,29 @@ async function main() {
     }
   })
 
+  // 2. Promo Code
+  const promoAkhirTahun = await prisma.promoCode.create({
+    data: {
+      kode: 'AKHIRTAHUN26',
+      jenis: 'NOMINAL',
+      nilaiRupiah: 2000000,
+      kuota: 100,
+      berlakuHingga: new Date('2026-12-31')
+    }
+  });
+
   // 3. Buat Pengajar & Kelas
   const pengajar = await prisma.pengajar.create({
     data: {
       nama: 'Herr Schmidt',
       email: 'schmidt@maxima.com',
+    }
+  });
+
+  const pengajar2 = await prisma.pengajar.create({
+    data: {
+      nama: 'Frau Müller',
+      email: 'muller@maxima.com',
     }
   });
 
@@ -36,51 +54,33 @@ async function main() {
     }
   });
 
-  // 4. Buat Siswa
-  const siswa1 = await prisma.siswa.upsert({
-    where: { noKontrak: 'MX-2026-001' },
-    update: {},
-    create: {
-      noKontrak: 'MX-2026-001',
-      namaLengkap: 'Riska Mustikawati',
-      program: 'Ausbildung',
-      cabang: 'Jakarta',
-      paketId: paketAusbildung.id,
+  const kelasMunchen = await prisma.kelas.create({
+    data: {
+      nama: 'München',
+      level: 'B1',
+      bab: 1,
+      pengajarId: pengajar2.id,
+    }
+  });
+
+  // 4. Evaluasi Kelas
+  await prisma.evaluasiKelas.create({
+    data: {
       kelasId: kelasBerlin.id,
+      kendalaKelas: 'Siswa sering datang terlambat',
+      evaluasiPengajar: 'Materi disampaikan dengan baik, perlu perbanyak speaking'
     }
   });
 
-  // 5. Pembayaran
-  await prisma.pembayaran.create({
+  await prisma.evaluasiKelas.create({
     data: {
-      siswaId: siswa1.id,
-      nominalRupiah: 20000000,
-      keterangan: 'Pembayaran DP',
-      metode: 'Transfer Bank BCA',
-      status: 'LUNAS'
+      kelasId: kelasMunchen.id,
+      kendalaKelas: 'Siswa kurang aktif bertanya',
+      evaluasiPengajar: 'Pengajar sangat interaktif dan membantu'
     }
   });
 
-  // 6. Kehadiran
-  await prisma.kehadiran.create({
-    data: { siswaId: siswa1.id, status: 'Hadir', tanggal: new Date() }
-  });
-
-  // 7. Nilai Dummy
-  await prisma.nilai.create({
-    data: {
-      siswaId: siswa1.id,
-      jenis: 'A1',
-      lesen: 80,
-      horen: 75,
-      schreiben: 85,
-      sprechen: 70,
-      grammatik: 80,
-      wortschatz: 75
-    }
-  });
-
-  // 8. Jadwal Akademik (Detail dengan jam)
+  // 5. Jadwal Akademik
   await prisma.jadwalAkademik.create({
     data: {
       kelasId: kelasBerlin.id,
@@ -93,185 +93,274 @@ async function main() {
     }
   });
 
-  // 9. Tugas Dummy
-  await prisma.tugas.create({
+  await prisma.jadwalAkademik.create({
     data: {
-      judul: 'Latihan Menulis Surat (Schreiben)',
-      selesai: false,
-      siswaId: siswa1.id,
-      kelasId: kelasBerlin.id
-    }
-  });
-
-  // 10. Raport / Catatan
-  await prisma.raport.create({
-    data: {
-      catatan: 'Siswa Riska sangat aktif di kelas, tapi perlu banyak latihan mendengarkan (Hören).',
-      siswaId: siswa1.id,
-      pengajarId: pengajar.id
-    }
-  });
-
-  // 11. Ujian Sertifikasi (Goethe B1 mock)
-  await prisma.ujianSertifikasi.create({
-    data: {
-      namaUjian: 'Goethe Zertifikat A1',
-      lulus: true,
-      nilai: 85,
-      siswaId: siswa1.id
-    }
-  });
-
-  // --- DUMMY EXTRA DATA ---
-  
-  // Extra Teacher & Class
-  const pengajar2 = await prisma.pengajar.create({
-    data: {
-      nama: 'Frau Müller',
-      email: 'muller@maxima.com',
-    }
-  });
-
-  const kelasMunchen = await prisma.kelas.create({
-    data: {
-      nama: 'München',
-      level: 'B1',
-      bab: 1,
-      pengajarId: pengajar2.id,
-    }
-  });
-
-  // Extra Siswa 2 (At Risk Student in Berlin)
-  const siswa2 = await prisma.siswa.upsert({
-    where: { noKontrak: 'MX-2026-002' },
-    update: {},
-    create: {
-      noKontrak: 'MX-2026-002',
-      namaLengkap: 'Budi Santoso',
-      program: 'Ausbildung',
-      cabang: 'Jakarta',
-      paketId: paketAusbildung.id,
-      kelasId: kelasBerlin.id,
-    }
-  });
-
-  await prisma.kehadiran.create({
-    data: { siswaId: siswa2.id, status: 'Alpha', tanggal: new Date() }
-  });
-  await prisma.kehadiran.create({
-    data: { siswaId: siswa2.id, status: 'Hadir', tanggal: new Date() }
-  });
-  await prisma.kehadiran.create({
-    data: { siswaId: siswa2.id, status: 'Alpha', tanggal: new Date() }
-  });
-
-  await prisma.nilai.create({
-    data: {
-      siswaId: siswa2.id,
-      jenis: 'A1',
-      lesen: 40, horen: 50, schreiben: 45, sprechen: 30, grammatik: 50, wortschatz: 40
-    }
-  });
-
-  await prisma.tugas.create({
-    data: { judul: 'Latihan Menulis', selesai: false, siswaId: siswa2.id, kelasId: kelasBerlin.id }
-  });
-  await prisma.tugas.create({
-    data: { judul: 'Latihan Mendengar', selesai: false, siswaId: siswa2.id, kelasId: kelasBerlin.id }
-  });
-  await prisma.tugas.create({
-    data: { judul: 'Grammatik Test', selesai: false, siswaId: siswa2.id, kelasId: kelasBerlin.id }
-  });
-  await prisma.tugas.create({
-    data: { judul: 'Wortschatz', selesai: false, siswaId: siswa2.id, kelasId: kelasBerlin.id }
-  });
-
-  // Extra Siswa 3 (Good Student in München)
-  const siswa3 = await prisma.siswa.upsert({
-    where: { noKontrak: 'MX-2026-003' },
-    update: {},
-    create: {
-      noKontrak: 'MX-2026-003',
-      namaLengkap: 'Siti Aminah',
-      program: 'Au Pair',
-      cabang: 'Bandung',
-      paketId: paketAusbildung.id,
       kelasId: kelasMunchen.id,
+      jenis: 'Kelas',
+      keterangan: 'Sesi Intensif - B1',
+      tanggal: new Date(),
+      jamMulai: '10:00',
+      jamSelesai: '12:00',
+      status: 'Akan Dimulai'
     }
   });
 
-  await prisma.kehadiran.create({
-    data: { siswaId: siswa3.id, status: 'Hadir', tanggal: new Date() }
-  });
-
-  await prisma.nilai.create({
-    data: {
-      siswaId: siswa3.id,
-      jenis: 'B1',
-      lesen: 95, horen: 90, schreiben: 92, sprechen: 88, grammatik: 95, wortschatz: 98
-    }
-  });
-
-  // --- GENERATE 50 DUMMY SISWA UNTUK MEMENUHI DATA APP ---
-  console.log('Men-generate 50 data siswa tambahan...');
+  // --- GENERATE 53 DUMMY SISWA UNTUK MEMENUHI DATA APP ---
+  console.log('Men-generate 53 data siswa tambahan...');
   
   const cabangOptions = ['Jakarta', 'Bandung', 'Jakarta', 'Jakarta', 'Bandung']; // 60% Jkt, 40% Bdg
-  const kelasOptions = [kelasBerlin.id, kelasMunchen.id];
   
-  for (let i = 4; i <= 53; i++) {
+  const namaRealistis = [
+    "Riska Mustikawati", "Budi Santoso", "Siti Aminah",
+    "Andi Saputra", "Bima Nugraha", "Cahya Fitriani", "Dinda Permatasari", "Eko Prasetyo",
+    "Fajar Rahman", "Gita Saraswati", "Hadi Kusuma", "Indah Lestari", "Joko Susilo",
+    "Kartika Wijaya", "Lina Marlina", "Muhammad Rizky", "Nadia Oktaviani", "Oka Pratama",
+    "Putri Ramadhani", "Qori Maharani", "Reza Fahlevi", "Siti Nurhaliza", "Tegar Hidayat",
+    "Umar Maulana", "Vira Yuniar", "Wahyudi Syahputra", "Xavier Antonio", "Yuniarti Ningsih",
+    "Zaki Mubarok", "Aditya Suryono", "Bunga Citra", "Chandra Kirana", "Dian Sastro",
+    "Erlangga Bima", "Farhan Siregar", "Gilang Dirga", "Hendra Setiawan", "Irfan Hakim",
+    "Jamaluddin", "Kurniawan Dwi", "Lesti Andryani", "Maulana Malik", "Novita Sari",
+    "Oki Setiana", "Prilly Latuconsina", "Qonita Aulia", "Rafi Ahmad", "Syifa Hadju",
+    "Tari Lestari", "Ujang Sudrajat", "Vino Bastian", "Wulan Guritno", "Yayan Ruhian",
+    "Zaskia Sungkar"
+  ];
+
+  for (let i = 1; i <= 53; i++) {
     const isBandung = i % 3 === 0;
     const currentCabang = cabangOptions[i % 5];
     const currentKelasId = isBandung ? kelasMunchen.id : kelasBerlin.id;
-    
-    // Generate Random Scores between 50-100 (some lower to trigger risk)
-    const baseScore = i % 7 === 0 ? 40 : 70; 
+    const currentPengajarId = isBandung ? pengajar2.id : pengajar.id;
     const isRisky = i % 7 === 0;
+    const isLulus = i % 5 === 0;
+    const baseScore = isRisky ? 40 : (isLulus ? 85 : 70); 
 
     const newSiswa = await prisma.siswa.upsert({
       where: { noKontrak: `MX-2026-${i.toString().padStart(3, '0')}` },
       update: {},
       create: {
         noKontrak: `MX-2026-${i.toString().padStart(3, '0')}`,
-        namaLengkap: `Dummy Siswa ${i}`,
+        namaLengkap: namaRealistis[i - 1] || `Siswa Baru ${i}`,
         program: isRisky ? 'Au Pair' : 'Ausbildung',
         cabang: currentCabang,
+        tahapanAdmission: isLulus ? 'Alumni' : 'Sedang Belajar Bahasa',
         paketId: paketAusbildung.id,
         kelasId: currentKelasId,
       }
     });
 
-    // Random Attendances (3 records)
+    // Kehadiran
     for (let j = 0; j < 3; j++) {
       await prisma.kehadiran.create({
         data: { 
           siswaId: newSiswa.id, 
           status: isRisky && j > 0 ? 'Alpha' : 'Hadir', 
-          tanggal: new Date(Date.now() - (j * 24 * 60 * 60 * 1000)) // Past dates
+          tanggal: new Date(Date.now() - (j * 24 * 60 * 60 * 1000))
         }
       });
     }
 
-    // Random Nilai
+    // Nilai Akademik
     await prisma.nilai.create({
       data: {
         siswaId: newSiswa.id,
         jenis: isBandung ? 'B1' : 'A1',
-        lesen: baseScore + (i % 20),
-        horen: baseScore + (i % 15),
-        schreiben: baseScore + (i % 10),
-        sprechen: baseScore + (i % 25),
-        grammatik: baseScore + (i % 12),
-        wortschatz: baseScore + (i % 18)
+        lesen: baseScore + (i % 10),
+        horen: baseScore + (i % 8),
+        schreiben: baseScore + (i % 12),
+        sprechen: baseScore + (i % 15),
+        grammatik: baseScore + (i % 9),
+        wortschatz: baseScore + (i % 11)
       }
     });
 
-    // Create Tugas if not risky
+    // Raport
+    await prisma.raport.create({
+      data: {
+        catatan: isRisky ? 'Siswa perlu bimbingan tambahan, sering tidak hadir.' : 'Progres belajar sangat baik, pertahankan.',
+        siswaId: newSiswa.id,
+        pengajarId: currentPengajarId
+      }
+    });
+
+    // Tugas
     if (!isRisky) {
       await prisma.tugas.create({
         data: { judul: `Latihan Bab ${i%5}`, selesai: true, siswaId: newSiswa.id, kelasId: currentKelasId }
       });
     }
+
+    // Ujian Sertifikasi (Tabel Lama Akademik)
+    if (isLulus || isBandung) {
+      await prisma.ujianSertifikasi.create({
+        data: {
+          namaUjian: isBandung ? 'Goethe Zertifikat B1' : 'Goethe Zertifikat A1',
+          lulus: isLulus,
+          nilai: isLulus ? 85 : 65,
+          siswaId: newSiswa.id
+        }
+      });
+    }
+
+    // Progres Bahasa
+    await prisma.progresBahasa.create({
+      data: {
+        siswaId: newSiswa.id,
+        level: isBandung ? 'B1' : 'A1',
+        statusLulus: isLulus,
+        sedangBelajar: !isLulus
+      }
+    });
+
+    // Keuangan: Tagihan & Pembayaran & Arus Kas
+    const tagihanDP = await prisma.tagihan.create({
+      data: {
+        siswaId: newSiswa.id,
+        termin: 'DP',
+        nominalRupiah: 10000000,
+        jatuhTempo: new Date(Date.now() - (30 * 24 * 60 * 60 * 1000)),
+        status: 'LUNAS',
+        promoId: i % 10 === 0 ? promoAkhirTahun.id : null
+      }
+    });
+
+    const pembayaranDP = await prisma.pembayaran.create({
+      data: {
+        siswaId: newSiswa.id,
+        tagihanId: tagihanDP.id,
+        nominalRupiah: i % 10 === 0 ? 8000000 : 10000000,
+        keterangan: 'Pembayaran DP Awal',
+        metode: 'Transfer Bank BCA',
+        status: 'LUNAS'
+      }
+    });
+
+    await prisma.arusKas.create({
+      data: {
+        tipe: 'CASH_IN',
+        kategori: 'PEMBAYARAN_SISWA',
+        nominal: pembayaranDP.nominalRupiah,
+        keterangan: `Pembayaran DP ${newSiswa.namaLengkap}`,
+        pembayaranId: pembayaranDP.id
+      }
+    });
+
+    // Dokumen Siswa
+    await prisma.dokumenSiswa.create({
+      data: {
+        siswaId: newSiswa.id,
+        pasFoto: 'https://example.com/pasfoto.jpg',
+        aktaKelahiran: isLulus ? 'https://example.com/akta.pdf' : null,
+        kartuKeluarga: isLulus ? 'https://example.com/kk.pdf' : null,
+        paspor: isLulus ? 'https://example.com/paspor.pdf' : null,
+      }
+    });
+
+    // Rekomendasi Ujian & Jadwal Ujian
+    if (isLulus || isBandung) {
+      await prisma.rekomendasiUjian.create({
+        data: {
+          siswaId: newSiswa.id,
+          namaUjian: 'Goethe Zertifikat B1',
+          status: isLulus ? 'Lulus' : 'Direkomendasikan'
+        }
+      });
+
+      await prisma.jadwalUjianBahasa.create({
+        data: {
+          siswaId: newSiswa.id,
+          jenisUjian: 'Goethe B1',
+          level: 'B1',
+          tanggalUjian: new Date(Date.now() + (15 * 24 * 60 * 60 * 1000)),
+          status: isLulus ? 'Lulus' : 'Terdaftar',
+          hasil: isLulus ? 'Lulus' : null
+        }
+      });
+      
+      if (isLulus) {
+        await prisma.sertifikatBahasaDetail.create({
+          data: {
+            siswaId: newSiswa.id,
+            jenisSertifikat: 'Goethe',
+            level: 'B1',
+            nilaiLesen: 85,
+            nilaiHoren: 80,
+            nilaiSprechen: 88,
+            nilaiSchreiben: 82
+          }
+        });
+      }
+    }
+
+    // Layanan Siswa & Partner & Wawancara (Untuk yang lulus / bandung)
+    if (isLulus) {
+      await prisma.layananSiswa.create({
+        data: {
+          siswaId: newSiswa.id,
+          jenisLayanan: 'Pembuatan Paspor',
+          status: 'Bisa diproses'
+        }
+      });
+
+      await prisma.progresPartner.create({
+        data: {
+          siswaId: newSiswa.id,
+          partnerName: 'Klinik München GmbH',
+          posisi: 'Pflegefachkraft',
+          status: 'Dapat Kontrak',
+          catatanAdmission: 'Dokumen kontrak sudah turun'
+        }
+      });
+
+      await prisma.latihanWawancara.create({
+        data: {
+          siswaId: newSiswa.id,
+          posisi: 'Pflegefachkraft',
+          tanggal: new Date(Date.now() - (5 * 24 * 60 * 60 * 1000)),
+          status: 'Selesai',
+          pic: 'Frau Schmidt',
+          catatan: 'Lancar dan komunikatif'
+        }
+      });
+
+      await prisma.timelineAdmission.create({
+        data: {
+          siswaId: newSiswa.id,
+          aktivitas: 'Tanda Tangan Kontrak',
+          deskripsi: 'Siswa menandatangani kontrak kerja dengan Klinik München'
+        }
+      });
+
+      await prisma.dataAlumni.create({
+        data: {
+          siswaId: newSiswa.id,
+          perusahaan: 'Klinik München GmbH',
+          posisiJurusan: 'Pflegefachkraft',
+          kota: 'München',
+          bundesland: 'Bayern',
+          tanggalKeberangkatan: new Date(Date.now() + (60 * 24 * 60 * 60 * 1000))
+        }
+      });
+    }
   }
+
+  // Pengeluaran Kas (Arus Kas Out)
+  await prisma.arusKas.create({
+    data: {
+      tipe: 'CASH_OUT',
+      kategori: 'OPERASIONAL',
+      nominal: 5000000,
+      keterangan: 'Pembayaran Listrik & Internet Bulan Ini'
+    }
+  });
+  
+  await prisma.arusKas.create({
+    data: {
+      tipe: 'CASH_OUT',
+      kategori: 'OPERASIONAL',
+      nominal: 12000000,
+      keterangan: 'Gaji Pengajar'
+    }
+  });
 
   console.log('✅ Seeder berhasil dijalankan! 53 Siswa terdaftar. Database siap digunakan.')
 }

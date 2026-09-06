@@ -15,20 +15,41 @@ export default function SiswaLayout({
         </div>
         
         <nav className="flex-1 space-y-1">
-          <Link href="/siswa/dashboard" className="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+          <Link href="/siswa/dashboard" className="block px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors">
             Dashboard
           </Link>
-          <Link href="/siswa/kelas" className="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
-            Kelas Saya
+          <Link href="/siswa/profil" className="block px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+            Profil Saya
           </Link>
-          <Link href="/siswa/ujian" className="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
-            Input Ujian & Sertifikasi
+          <Link href="/siswa/pembayaran" className="block px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+            Pembayaran
           </Link>
-          <Link href="/siswa/dokumen" className="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
-            Dokumen Persiapan
+          <Link href="/siswa/pembelajaran" className="block px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+            Pembelajaran
           </Link>
-          <Link href="#" className="block px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors">
-            Progres Penempatan
+          <Link href="/siswa/jadwal" className="block px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+            Jadwal Saya
+          </Link>
+          <Link href="/siswa/kehadiran" className="block px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+            Kehadiran
+          </Link>
+          <Link href="/siswa/nilai-raport" className="block px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+            Nilai & Raport
+          </Link>
+          <Link href="/siswa/sertifikat-bahasa" className="block px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+            Sertifikat Bahasa
+          </Link>
+          <Link href="/siswa/progres-layanan" className="block px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+            Progres Layanan
+          </Link>
+          <Link href="/siswa/admission-progress" className="block px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+            Admission Progress
+          </Link>
+          <Link href="/siswa/latihan-wawancara" className="block px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+            Latihan Wawancara
+          </Link>
+          <Link href="/siswa/alumni" className="block px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+            Alumni
           </Link>
         </nav>
 
