@@ -42,7 +42,37 @@ export default async function SiswaDashboardPage() {
         <p className="text-gray-500 mt-1">Ringkasan status kursus dan penempatan Anda.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
+        {/* Profil Singkat Siswa */}
+        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">{siswa.namaLengkap}</h2>
+            <p className="text-gray-500 text-sm mt-1">{siswa.noKontrak}</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
+            <div>
+              <p className="text-gray-500 mb-1">Program</p>
+              <p className="font-semibold text-gray-900">{siswa.program}</p>
+            </div>
+            <div>
+              <p className="text-gray-500 mb-1">Cabang</p>
+              <p className="font-semibold text-gray-900">{siswa.cabang}</p>
+            </div>
+            <div>
+              <p className="text-gray-500 mb-1">Status</p>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                {siswa.status}
+              </span>
+            </div>
+            <div>
+              <p className="text-gray-500 mb-1">PIC Konsultan</p>
+              <p className="font-semibold text-gray-900">Admin Maxima</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
           <h3 className="text-sm font-medium text-gray-500">Status Pembayaran</h3>
           <p className="text-xl font-bold text-gray-900 mt-2">{formatRp(totalDibayar)} / {formatRp(siswa.paket.hargaRupiah)}</p>
